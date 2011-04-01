@@ -3,16 +3,11 @@ __author__ = "python_guy"
 
 from twisted.words.protocols import irc
 from twisted.internet import protocol
-import re
 import commands
+import triggers
 
 
 
-
-# Various regular expressions for finding commands in messages
-# TODO: What characters are allowed in a nick?
-# For finding karma
-karma_regex = re.compile("([\w-]+)([\+-]{2})", re.M)
 
 class PythonBot(irc.IRCClient):
     """ An IRC bot for #/r/nyc on freenode. """
@@ -59,7 +54,8 @@ class PythonBot(irc.IRCClient):
             # Check for the reload command (which relods the commands module)
             if command == "reload":
                 reload(commands)
-                self.msg(channel, "Commands reloaded.")
+                reload(triggers)
+                self.msg(channel, "Modules reloaded.")
             # Try to get the command from commands.py
             if hasattr(commands, command):
                 # Run the command if it exists
@@ -68,21 +64,26 @@ class PythonBot(irc.IRCClient):
 
         # Check for silent triggers
         # (anything that doesn't require the bot to respond)
-        
-        # Karma Trigger
-        for nick, points in karma_regex.findall(msg):
-            # First, make sure the nick exists in the database
-            if not db.karma.find_one({"nick": nick}):
-                # Create it if it doesn't exist
-                db.karma.insert({"nick": nick, "value": 0})
-            # Mapping the "++" and "--" to numeric values
-            # (I resisted the urge to make it a one-liner)
-            if points == "++":
-                points = +1
-            else:
-                points = -1
-            # This will increment the nick's karma by the value of points
-            db.karma.update({"nick": nick}, {"$inc": {"karma": points}})
+        # Load them from triggers.py so we can hot swap them
+        triggers.process_message(self, user, channel, msg)
+
+
+    def who(self, channel):
+        "List the users in 'channel', usage: client.who('#testroom')"
+        self.sendLine('WHO %s' % channel)
+
+    def irc_RPL_WHOREPLY(self, *nargs):
+        "Receive WHO reply from server"
+        print 'WHO:', nargs
+
+    def irc_RPL_ENDOFWHO(self, *nargs):
+        "Called when WHO output is complete"
+        print 'WHO COMPLETE'
+
+    def irc_unknown(self, prefix, command, params):
+        "Print all unhandled replies, for debugging."
+        print 'UNKNOWN:', prefix, command, params
+
 
 
 
@@ -119,6 +120,7 @@ if __name__ == "__main__":
     db = connection.rnyc_irc
     # TODO: Kinda lame
     commands.db = db
+    triggers.db = db
 
     # Start the bot
     reactor.connectTCP("irc.freenode.net", 6667, PythonBotFactory(chan))

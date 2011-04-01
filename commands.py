@@ -8,6 +8,10 @@ So if a command breaks, or a new one needs to be added, we don't need to
 disconnect the bot from IRC to fix it. This bot is built for five-nines!
 """
 
+import random
+
+
+
 
 def karma (self, user, channel, args):
     """ Responds with a list of karma records. """
@@ -18,7 +22,16 @@ def karma (self, user, channel, args):
                            "%s: %s" % (record["nick"], record["karma"])
                            for record in db.karma.find()
                            ])
+    karma_text = karma_text.replace("<random>", str(random.randint(1, 1000)))
+    
     self.msg(channel, str(karma_text))
+
+
+def production (self, user, channel, args):
+    if args == "join":
+        self.join("#/r/nyc")
+    elif args == "leave":
+        self.leave("#/r/nyc")
 
 
 def help (self, user, channel, args):
