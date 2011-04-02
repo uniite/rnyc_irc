@@ -9,6 +9,7 @@ disconnect the bot from IRC to fix it. This bot is built for five-nines!
 """
 
 import random
+from rickroll import make_call
 
 
 
@@ -16,15 +17,40 @@ import random
 def karma (self, user, channel, args):
     """ Responds with a list of karma records. """
 
+    # Check for any sub-commands (like merge)
+    args = args.split(" ")
+    if args[0] == "merge":
+        self.msg(channel, "Cut it out!")
+        return
+        old_karma = db.karma.find_one({"nick": args[1]})["karma"]
+        new_karma = db.karma.find_one({"nick": args[2]})["karma"]
+        new_karma += old_karma
+        db.karma.update({"nick": args[2]}, {"$set": {"karma": new_karma}})
+        db.karma.remove({"nick": args[1]})
+        self.msg(channel, "%s + %s -> %s: %s" % \
+                          (args[1], args[2], args[2], new_karma))
+        return
+
     # TODO: Make this into a for loop if someone complains >_>
     # Put together a readable karma list, and display it'
-    karma_text = ", ".join([
-                           "%s: %s" % (record["nick"], record["karma"])
-                           for record in db.karma.find()
-                           ])
-    karma_text = karma_text.replace("<random>", str(random.randint(1, 1000)))
+    all = [x for x in db.karma.find()]
+    all.sort(lambda x, y: cmp(y["karma"], x["karma"]))
+    print all
+    top_5 = all[:5]
+    bottom_5 = all[-5:]
+    karmaValues = lambda y: ", ".join(["%s(%s)" % (x["nick"], x["karma"]) for x in y])
+    karma_text = "Top 5: %s | Bottom 5: %s" % (karmaValues(top_5), karmaValues(bottom_5))
+    karma_text = karma_text.replace("<random>", str(random.randint(-1000, 1000)))
     
     self.msg(channel, str(karma_text))
+
+
+def rickroll (self, user, channel, args):
+    print "Rick rolling %s" % args
+    self.msg(channel, "Only available on April Fool's Day")
+    return
+    make_call(args)
+    self.msg(channel, "Calling %s..." % args)
 
 
 def production (self, user, channel, args):
@@ -37,7 +63,14 @@ def production (self, user, channel, args):
 def help (self, user, channel, args):
     """ Reponds with a list of commands. """
 
-    commands = ["help", "karma", "this wasn't here before"]
+    commands = ["help", "karma", "rickroll"]
     commands.sort()
     self.msg(channel, "Commands: %s" % ", ".join(commands))
 
+
+def reload_nick (self, user, channel, args):
+    self.setNick("cobra_bot")
+
+
+def src (self, user, channel, args):
+    self.msg(channel, "https://github.com/uniite/rnyc_irc")

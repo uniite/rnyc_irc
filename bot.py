@@ -45,7 +45,7 @@ class PythonBot(irc.IRCClient):
             # A command was given; parse it
             # If it has spaces, assume the command has arguments
             if msg.find(" ") != -1:
-                command , args = msg[1:].split(" ", 1)
+                command, args = msg[1:].split(" ", 1)
             # Otherwise, the command is just everything after the "!"
             else:
                 command = msg[1:]
@@ -92,7 +92,7 @@ class PythonBot(irc.IRCClient):
 class PythonBotFactory(protocol.ClientFactory):
     protocol = PythonBot
 
-    def __init__(self, channel, nickname="python_bot"):
+    def __init__(self, channel, nickname="cobra_bot"):
         self.channel = channel
         self.nickname = nickname
 
@@ -115,6 +115,7 @@ if __name__ == "__main__":
         chan = "#/r/nyc-test"
 
     # Connect to the DB
+    print "Connecting to database..."
     from pymongo import Connection
     connection = Connection()
     db = connection.rnyc_irc
@@ -123,5 +124,6 @@ if __name__ == "__main__":
     triggers.db = db
 
     # Start the bot
+    print "Connecting to IRC..."
     reactor.connectTCP("irc.freenode.net", 6667, PythonBotFactory(chan))
     reactor.run()
