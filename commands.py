@@ -13,15 +13,15 @@ import urllib2
 import json
 
 def reddit(self, user, channel, args):
-    if len(args) == 0:
-        uname = user;
+    if args:
+        uname = args
     else:
-        uname = args[0]
+        uname = user
 
     try:
-        response = urllib2.urlopen('http://reddit.com/user/'+uname+'/about.json')
-    except Exception, e:
-        self.msg(channnel, "User: "+uname+" does not exist.")
+        response = urllib2.urlopen('http://reddit.com/user/%s/about.json' % uname)
+    except urllib2.HttpError:
+        self.msg(channnel, "User: %s does not exist." % uname)
         return
 
     jsn = response.read()
