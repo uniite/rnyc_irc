@@ -12,6 +12,7 @@ import random
 import urllib2
 import json
 
+
 def reddit(self, user, channel, args):
     if args:
         uname = args
@@ -33,7 +34,7 @@ def reddit(self, user, channel, args):
         # Happens when the data is malformed, and we can't get what we want from the JSON
         self.msg(channnel, "Reddit broke :(")
 
-from rickroll import make_call
+
 def karma (self, user, channel, args):
     """ Responds with a list of karma records. """
 
@@ -63,14 +64,6 @@ def karma (self, user, channel, args):
     karma_text = karma_text.replace("<random>", str(random.randint(-1000, 1000)))
     
     self.msg(channel, str(karma_text))
-
-
-def rickroll (self, user, channel, args):
-    print "Rick rolling %s" % args
-    self.msg(channel, "Only available on April Fool's Day")
-    return
-    make_call(args)
-    self.msg(channel, "Calling %s..." % args)
 
 
 def production (self, user, channel, args):
