@@ -13,7 +13,7 @@ import random
 import urllib2
 import json
 import inspect
-
+import time
 
 def reddit(self, user, channel, args):
     if args:
@@ -26,6 +26,9 @@ def reddit(self, user, channel, args):
         # Let the JSON module read in the response from Reddit's User API
         data = json.load(urllib2.urlopen("http://reddit.com/user/%s/about.json" % uname))["data"]
         # Feed the JSON-sourced dictionary to a format string
+        epoch_time = data["created_utc"] - gmtime(0)
+        
+
         self.msg(
             channel,
             "User: {name}  Link Karma: {link_karma}  Comment Karma: {comment_karma}".format(**data)
@@ -82,8 +85,9 @@ def help (self, user, channel, args):
     """ Reponds with a list of commands. """
 
     funcs = [member for member in inspect.getmembers(sys.modules[__name__]) if inspect.isfunction(member[1])]
+    print funcs
     command_pairs = [f for f in funcs if len(inspect.getargspec(f[1])[0]) == 4]
-    self.msg(channel, "Commands: %s" % ", ".join([command_pair[0] for command_pair in command_pairs]))
+    #self.msg(channel, "Commands: %s" % ", ".join([command_pair[0] for command_pair in command_pairs]))
 
 
 def reload_nick (self, user, channel, args):
@@ -92,6 +96,13 @@ def reload_nick (self, user, channel, args):
 
 def src (self, user, channel, args):
     self.msg(channel, "https://github.com/uniite/rnyc_irc")
+
+def rickroll (self, user, channel, args):
+    print "Rick rolling %s" % args
+    self.msg(channel, "Only available on April Fool's Day")
+    return
+    make_call(args)
+    self.msg(channel, "Calling %s..." % args)
 
 import wikipedia as w
 def wiki(self, user, channel, args): 
