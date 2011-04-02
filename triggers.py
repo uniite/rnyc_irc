@@ -23,7 +23,7 @@ def process_message (self, user, channel, msg):
         # First, make sure the nick exists in the database
         if not db.karma.find_one({"nick": nick}):
             # Create it if it doesn't exist
-            db.karma.insert({"nick": nick, "value": 0})
+            db.karma.insert({"nick": nick})
             # Mapping the "++" and "--" to numeric values
         # (I resisted the urge to make it a one-liner)
         if points == "++":
