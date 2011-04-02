@@ -9,9 +9,28 @@ disconnect the bot from IRC to fix it. This bot is built for five-nines!
 """
 
 import random
+import urllib2
+import json
 
+def reddit(self, user, channel, args):
+    if len(args) == 0:
+        uname = user;
+    else:
+        uname = args[0]
 
+    try:
+        response = urllib2.urlopen('http://reddit.com/user/'+uname+'/about.json')
+    except Exception, e:
+        self.msg(channnel, "User: "+uname+" does not exist.")
+        return
 
+    jsn = response.read()
+    
+    data = json.loads(jsn)
+    lk=data['link_karma']
+    ck=data['comment_karma']
+    
+    self.msg(channel, "User: "+uname+" Link Karma: "+lk+" Comment Karma: "+ck)
 
 def karma (self, user, channel, args):
     """ Responds with a list of karma records. """
