@@ -8,9 +8,11 @@ So if a command breaks, or a new one needs to be added, we don't need to
 disconnect the bot from IRC to fix it. This bot is built for five-nines!
 """
 
+import sys
 import random
 import urllib2
 import json
+import inspect
 
 
 def reddit(self, user, channel, args):
@@ -79,9 +81,9 @@ def production (self, user, channel, args):
 def help (self, user, channel, args):
     """ Reponds with a list of commands. """
 
-    commands = ["help", "karma", "rickroll"]
-    commands.sort()
-    self.msg(channel, "Commands: %s" % ", ".join(commands))
+    funcs = [member for member in inspect.getmembers(sys.modules[__name__]) if inspect.isfunction(member[1])]
+    command_pairs = [f for f in funcs if len(inspect.getargspec(f[1])[0]) == 4]
+    self.msg(channel, "Commands: %s" % ", ".join([command_pair[0] for command_pair in command_pairs]))
 
 
 def reload_nick (self, user, channel, args):
@@ -113,3 +115,4 @@ def wiki(self, user, channel, args):
             self.msg(channel, result)
         else: self.msg(channel, 'Can\'t find anything in Wikipedia for "%s".' % origterm)
 
+help(None, None, None, None)
