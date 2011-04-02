@@ -82,7 +82,7 @@ def help (self, user, channel, args):
     """ Reponds with a list of commands. """
 
     funcs = [member for member in inspect.getmembers(sys.modules[__name__]) if inspect.isfunction(member[1])]
-    #command_pairs = [f for f in funcs if len(inspect.getargspec(f[1])[0]) == 4]
+    command_pairs = [f for f in funcs if len(inspect.getargspec(f[1])[0]) == 4]
     self.msg(channel, "Commands: %s" % ", ".join([command_pair[0] for command_pair in command_pairs]))
 
 
