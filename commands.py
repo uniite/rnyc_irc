@@ -29,10 +29,10 @@ def reddit(self, user, channel, args):
             "User: {name}  Link Karma: {link_karma}  Comment Karma: {comment_karma}".format(**data)
         )
     except urllib2.HTTPError, e:
-        if e.code == "404":
+        if e.code == 404:
             self.msg(channel, "User: %s does not exist." % uname)
         else:
-            raise self.msg(channel, "Reddit is down!")
+            self.msg(channel, "Reddit is down!")
     except KeyError:
         # Happens when the data is malformed, and we can't get what we want from the JSON
         self.msg(channel, "Reddit broke :(")
