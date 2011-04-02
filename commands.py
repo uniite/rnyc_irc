@@ -90,3 +90,26 @@ def reload_nick (self, user, channel, args):
 
 def src (self, user, channel, args):
     self.msg(channel, "https://github.com/uniite/rnyc_irc")
+
+import wikipedia as w
+def wiki(self, user, channel, args): 
+    if not args:
+        self.msg(channel, "Usage !wiki <article>")
+    else:
+        origterm = args
+        origterm = origterm.encode('utf-8')
+
+        term = urllib2.unquote(origterm)
+        term = term[0].upper() + term[1:]
+        term = term.replace(' ', '_')
+
+        try: result = w.wikipedia(term)
+        except IOError: 
+            error = "Can't connect to en.wikipedia.org (%s)" % (wikiuri % term)
+            self.msg(channel, error)
+            return
+
+        if result is not None: 
+            self.msg(channel, result)
+        else: self.msg(channel, 'Can\'t find anything in Wikipedia for "%s".' % origterm)
+
