@@ -16,21 +16,22 @@ def reddit(self, user, channel, args):
     if args:
         uname = args
     else:
-        uname = user
+        # user is in the format "nick_name!~real_name@host.name"
+        uname = user.split("!", 1)[0]
 
     try:
-        response = urllib2.urlopen('http://reddit.com/user/%s/about.json' % uname)
+        # Let the JSON module read in the response from Reddit's User API
+        data = json.load(urllib2.urlopen("http://reddit.com/user/%s/about.json" % uname))["data"]
+        # Feed the JSON-sourced dictionary to a format string
+        self.msg(
+            channel,
+            "User: {user}  Link Karma: {link_karma}  Comment Karma: {content_karma}".format(**data)
+        )
     except urllib2.HttpError:
         self.msg(channnel, "User: %s does not exist." % uname)
-        return
-
-    jsn = response.read()
-    
-    data = json.loads(jsn)
-    lk=data['link_karma']
-    ck=data['comment_karma']
-    
-    self.msg(channel, "User: "+uname+" Link Karma: "+lk+" Comment Karma: "+ck)
+    except KeyError:
+        # Happens when the data is malformed, and we can't get what we want from the JSON
+        self.msg(channnel, "Reddit broke :(")
 
 def karma (self, user, channel, args):
     """ Responds with a list of karma records. """
