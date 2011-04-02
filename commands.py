@@ -12,6 +12,7 @@ import random
 import urllib2
 import json
 
+
 def reddit(self, user, channel, args):
     if args:
         uname = args
@@ -25,15 +26,18 @@ def reddit(self, user, channel, args):
         # Feed the JSON-sourced dictionary to a format string
         self.msg(
             channel,
-            "User: {user}  Link Karma: {link_karma}  Comment Karma: {content_karma}".format(**data)
+            "User: {name}  Link Karma: {link_karma}  Comment Karma: {comment_karma}".format(**data)
         )
-    except urllib2.HttpError:
-        self.msg(channnel, "User: %s does not exist." % uname)
+    except urllib2.HTTPError, e:
+        if e.code == 404:
+            self.msg(channel, "User: %s does not exist." % uname)
+        else:
+            self.msg(channel, "Reddit is down!")
     except KeyError:
         # Happens when the data is malformed, and we can't get what we want from the JSON
-        self.msg(channnel, "Reddit broke :(")
+        self.msg(channel, "Reddit broke :(")
 
-from rickroll import make_call
+
 def karma (self, user, channel, args):
     """ Responds with a list of karma records. """
 
@@ -65,14 +69,6 @@ def karma (self, user, channel, args):
     self.msg(channel, str(karma_text))
 
 
-def rickroll (self, user, channel, args):
-    print "Rick rolling %s" % args
-    self.msg(channel, "Only available on April Fool's Day")
-    return
-    make_call(args)
-    self.msg(channel, "Calling %s..." % args)
-
-
 def production (self, user, channel, args):
     if args == "join":
         self.join("#/r/nyc")
@@ -94,3 +90,26 @@ def reload_nick (self, user, channel, args):
 
 def src (self, user, channel, args):
     self.msg(channel, "https://github.com/uniite/rnyc_irc")
+
+import wikipedia as w
+def wiki(self, user, channel, args): 
+    if not args:
+        self.msg(channel, "Usage !wiki <article>")
+    else:
+        origterm = args
+        origterm = origterm.encode('utf-8')
+
+        term = urllib2.unquote(origterm)
+        term = term[0].upper() + term[1:]
+        term = term.replace(' ', '_')
+
+        try: result = w.wikipedia(term)
+        except IOError: 
+            error = "Can't connect to en.wikipedia.org (%s)" % (wikiuri % term)
+            self.msg(channel, error)
+            return
+
+        if result is not None: 
+            self.msg(channel, result)
+        else: self.msg(channel, 'Can\'t find anything in Wikipedia for "%s".' % origterm)
+
