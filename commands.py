@@ -26,13 +26,16 @@ def reddit(self, user, channel, args):
         # Feed the JSON-sourced dictionary to a format string
         self.msg(
             channel,
-            "User: {user}  Link Karma: {link_karma}  Comment Karma: {content_karma}".format(**data)
+            "User: {name}  Link Karma: {link_karma}  Comment Karma: {comment_karma}".format(**data)
         )
-    except urllib2.HttpError:
-        self.msg(channnel, "User: %s does not exist." % uname)
+    except urllib2.HTTPError, e:
+        if e.code == "404":
+            self.msg(channel, "User: %s does not exist." % uname)
+        else:
+            raise self.msg(channel, "Reddit is down!")
     except KeyError:
         # Happens when the data is malformed, and we can't get what we want from the JSON
-        self.msg(channnel, "Reddit broke :(")
+        self.msg(channel, "Reddit broke :(")
 
 
 def karma (self, user, channel, args):
