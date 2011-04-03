@@ -13,7 +13,8 @@ import random
 import urllib2
 import json
 import inspect
-
+import time
+from datetime import date, timedelta
 
 def reddit(self, user, channel, args):
     if args:
@@ -26,9 +27,20 @@ def reddit(self, user, channel, args):
         # Let the JSON module read in the response from Reddit's User API
         data = json.load(urllib2.urlopen("http://reddit.com/user/%s/about.json" % uname))["data"]
         # Feed the JSON-sourced dictionary to a format string
+        epoch_time = data["created_utc"]
+        created_date = date.fromtimestamp(int(epoch_time))
+        age = date.today() - created_date
+
+        if (age.days>365):
+            days = age.days%365
+            years = age.days/365
+            age_str = " Redditor for %s year(s) and %s day(s)." % (years, days)
+        else:
+            age_str = " Redditor for %s day(s)." % age.days
+
         self.msg(
             channel,
-            "User: {name}  Link Karma: {link_karma}  Comment Karma: {comment_karma}".format(**data)
+            "User: {name}  Link Karma: {link_karma}  Comment Karma: {comment_karma}".format(**data) + age_str
         )
     except urllib2.HTTPError, e:
         if e.code == 404:
@@ -37,8 +49,6 @@ def reddit(self, user, channel, args):
             self.msg(channel, "Reddit is down!")
     except KeyError:
         # Happens when the data is malformed, and we can't get what we want from the JSON
-        self.msg(channel, "Reddit broke :(")
-
 
 def karma (self, user, channel, args):
     """ Responds with a list of karma records. """
@@ -92,6 +102,13 @@ def reload_nick (self, user, channel, args):
 
 def src (self, user, channel, args):
     self.msg(channel, "https://github.com/uniite/rnyc_irc")
+
+def rickroll (self, user, channel, args):
+    print "Rick rolling %s" % args
+    self.msg(channel, "Only available on April Fool's Day")
+    return
+    make_call(args)
+    self.msg(channel, "Calling %s..." % args)
 
 import wikipedia as w
 def wiki(self, user, channel, args): 
