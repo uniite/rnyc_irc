@@ -49,6 +49,8 @@ def reddit(self, user, channel, args):
             self.msg(channel, "Reddit is down!")
     except KeyError:
         # Happens when the data is malformed, and we can't get what we want from the JSON
+        self.msg(channel, "Reddit broke :(")
+        
 
 def karma (self, user, channel, args):
     """ Responds with a list of karma records. """
