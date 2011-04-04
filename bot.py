@@ -5,7 +5,7 @@ from twisted.words.protocols import irc
 from twisted.internet import protocol
 import commands
 import triggers
-
+import thread
 
 
 
@@ -59,7 +59,7 @@ class PythonBot(irc.IRCClient):
             # Try to get the command from commands.py
             if hasattr(commands, command):
                 # Run the command if it exists
-                getattr(commands, command)(self, user, channel, args)
+                thread.start_new_thread(getattr(commands, command),(self, user, channel, args))
 
 
         # Check for silent triggers
