@@ -37,10 +37,16 @@ def reddit(self, user, channel, args):
             age_str = " Redditor for %s year(s) and %s day(s)." % (years, days)
         else:
             age_str = " Redditor for %s day(s)." % age.days
-
+        
+        link_velocity = data["link_karma"] / float(age.days)
+        comment_velocity = data["comment_karma"] / float(age.days)
+        
         self.msg(
             channel,
-            "User: {name}  Link Karma: {link_karma}  Comment Karma: {comment_karma}".format(**data) + age_str
+            "User: {name}  Link Karma: {link_karma} ".format(**data) + \
+            "({0:.2f} per day)  ".format(link_velocity) + \
+            "Comment Karma: {comment_karma} ".format(**data) + \
+            "({0:.2f} per day)  ".format(comment_velocity) + age_str
         )
     except urllib2.HTTPError, e:
         if e.code == 404:
