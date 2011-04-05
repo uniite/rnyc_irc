@@ -56,7 +56,16 @@ def reddit(self, user, channel, args):
     except KeyError:
         # Happens when the data is malformed, and we can't get what we want from the JSON
         self.msg(channel, "Reddit broke :(")
-        
+
+def crossword(self, user, channel, args):
+    """ Respons with a URL to Today's NYT crossword """
+    if args and args.count("puz") > 0:
+        folder="puzs"
+    else:
+        folder="pdfs"
+    today=date.today()
+    filename = "%02d.%02d.%02d.%s" % (today.year-2000, today.month, today.day, folder.rstrip('s'))
+    self.msg(channel, "http://jacobshufro.com/xwords/%s/%s" % (folder, filename))
 
 def karma (self, user, channel, args):
     """ Responds with a list of karma records. """
