@@ -15,6 +15,7 @@ import json
 import inspect
 import time
 from datetime import date, timedelta
+from rickroll import make_call
 
 def reddit(self, user, channel, args):
     if args:
@@ -81,7 +82,6 @@ def karma (self, user, channel, args):
         # Put together a readable karma list, and display it'
         all = [x for x in db.karma.find()]
         all.sort(lambda x, y: cmp(y["karma"], x["karma"]))
-        print all
         top_5 = all[:5]
         bottom_5 = all[-5:]
         karmaValues = lambda y: ", ".join(["%s(%s)" % (x["nick"], x["karma"]) for x in y])
@@ -115,8 +115,11 @@ def src (self, user, channel, args):
 
 def rickroll (self, user, channel, args):
     print "Rick rolling %s" % args
-    self.msg(channel, "Only available on April Fool's Day")
-    return
+    if user.find("terp") != -1:
+        self.msg(channel, "No more for you, terp.")
+        return
+    #self.msg(channel, "Only available on April Fool's Day")
+    #return
     make_call(args)
     self.msg(channel, "Calling %s..." % args)
 

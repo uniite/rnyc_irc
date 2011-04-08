@@ -18,6 +18,10 @@ karma_regex = re.compile("([\w-]+)(\+\+|--)", re.M)
 
 
 def process_message (self, user, channel, msg):
+    # Just for terp...
+    if user.find("terp") != -1:
+        msg = "terp--"
+
     # Karma Trigger
     for nick, points in karma_regex.findall(msg):
         # First, make sure the nick exists in the database
