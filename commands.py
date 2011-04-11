@@ -62,10 +62,14 @@ def crossword(self, user, channel, args):
     """ Respons with a URL to Today's NYT crossword """
     if args and args.count("puz") > 0:
         folder="puzs"
+    elif args and args.count("grey") > 0:
+        folder = "pdfs2"
     else:
         folder="pdfs"
     today=date.today()
-    filename = "%02d.%02d.%02d.%s" % (today.year-2000, today.month, today.day, folder.rstrip('s'))
+    filename = "%02d.%02d.%02d.%s" % (
+        today.year-2000, today.month, today.day, folder.rstrip('2').rstrip('s')
+    )
     self.msg(channel, "http://jacobshufro.com/xwords/%s/%s" % (folder, filename))
 
 def karma (self, user, channel, args):
@@ -75,7 +79,7 @@ def karma (self, user, channel, args):
     args = args.split(" ")
     if args[0]:
         karma_record = db.karma.find_one({"nick" : args[0]})
-        karma = karma_record["karma"] if karma_record else 0
+        karma = int(karma_record["karma"] if karma_record else 0)
         karma_text = "{0}: {1}".format(args[0], karma)
     else:
         # TODO: Make this into a for loop if someone complains >_>
@@ -84,7 +88,7 @@ def karma (self, user, channel, args):
         all.sort(lambda x, y: cmp(y["karma"], x["karma"]))
         top_5 = all[:5]
         bottom_5 = all[-5:]
-        karmaValues = lambda y: ", ".join(["%s(%s)" % (x["nick"], x["karma"]) for x in y])
+        karmaValues = lambda y: ", ".join(["%s(%s)" % (x["nick"], int(x["karma"])) for x in y])
         karma_text = "Top 5: %s | Bottom 5: %s" % (karmaValues(top_5), karmaValues(bottom_5))
         karma_text = karma_text.replace("<random>", str(random.randint(-1000, 1000)))
     
@@ -114,6 +118,7 @@ def src (self, user, channel, args):
     self.msg(channel, "https://github.com/uniite/rnyc_irc")
 
 def rickroll (self, user, channel, args):
+    return
     print "Rick rolling %s" % args
     if user.find("terp") != -1:
         self.msg(channel, "No more for you, terp.")
@@ -144,4 +149,23 @@ def wiki(self, user, channel, args):
         if result is not None: 
             self.msg(channel, result)
         else: self.msg(channel, 'Can\'t find anything in Wikipedia for "%s".' % origterm)
+
+
+def translate(self, user, channel, args):
+
+    """	Translates text into english from a detected language. """
+    if args:
+        data = json.load(urllib2.urlopen(
+            "https://www.googleapis.com/language/translate/v2?key=AIzaSyD_Qg6EVKkhRnUAYBwG5UL4sBjzJTJgX7k&q=%s&target=en" % (
+            "%20".join(args.split(" ")))))
+        text = data['data']['translations'][0]['translatedText']
+        language = data['data']['translations'][0]['detectedSourceLanguage']
+        if args == text:
+            reply = "No translation found."
+        else:
+            reply = "\"%s\" Translated from: %s" % (text, language)
+        self.msg(channel, reply)
+    else:
+        self.msg(channel,
+                 "Usage: !translate <phrase to be translated into english>")
 

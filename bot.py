@@ -40,6 +40,11 @@ class PythonBot(irc.IRCClient):
         # They come int he format "python_guy!~python_gu@www2.comefind.me"
         nick = user.split("!", 1)[0]
 
+        # For some reason, the channel is always the sender's name,
+        # instead of the receiver's name
+        if channel == self.nickname:
+            channel = nick
+
         # Now figure out if a command was given
         if msg.startswith("!"):
             # A command was given; parse it
