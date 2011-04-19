@@ -14,6 +14,7 @@ import urllib2
 import json
 import inspect
 import time
+import re
 from datetime import date, timedelta
 from rickroll import make_call
 
@@ -158,8 +159,8 @@ def translate(self, user, channel, args):
         data = json.load(urllib2.urlopen(
             "https://www.googleapis.com/language/translate/v2?key=AIzaSyD_Qg6EVKkhRnUAYBwG5UL4sBjzJTJgX7k&q=%s&target=en" % (
             "%20".join(args.split(" ")))))
-        text = data['data']['translations'][0]['translatedText']
-        language = data['data']['translations'][0]['detectedSourceLanguage']
+        text = str(data['data']['translations'][0]['translatedText'])
+        language = str(data['data']['translations'][0]['detectedSourceLanguage'])
         if args == text:
             reply = "No translation found."
         else:
@@ -169,3 +170,23 @@ def translate(self, user, channel, args):
         self.msg(channel,
                  "Usage: !translate <phrase to be translated into english>")
 
+
+def define(self, user, channel, args):
+    """ Defines a word using the Wiktionary API """
+    if args:
+        data = json.load(urllib2.urlopen(
+            "http://en.wiktionary.org/w/api.php?format=json&action=query&prop=revisions&rvprop=content&titles=%s" % args))
+        innerdata = data["query"]["pages"]
+        if "-1" in innerdata:
+            self.msg(channel, "No definition found.")
+            return
+        for key in innerdata:
+            string = innerdata[key]["revisions"][0]["*"]
+            result = re.findall(".*#.*", string)
+            defs = len(result)
+            formatted = re.sub("# ", "", re.sub("{.*}\s", "", result[0]))
+            formatted = str(formatted.replace('[', '').replace(']', ''))
+            self.msg(channel,
+                     "%s - %s (Found %i definitions at http://en.wiktionary.org/wiki/%s)" % (
+                     args, formatted, defs, args))
+            
