@@ -189,4 +189,6 @@ def define(self, user, channel, args):
             self.msg(channel,
                      "%s - %s (Found %i definitions at http://en.wiktionary.org/wiki/%s)" % (
                      args, formatted, defs, args))
-            
+
+def sudoku(self, user, channel, args):
+    self.msg(channel, "randomwhere: sudo learn python")
