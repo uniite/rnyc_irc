@@ -115,6 +115,12 @@ def reload_nick (self, user, channel, args):
     self.setNick("cobra_bot")
 
 
+import random
+def random(self, user, channel, args):
+    choices = args.split(" ")
+    choice = random.choice(choices)
+    self.msg(channel, "%s: %s" % user, choice)
+
 def src (self, user, channel, args):
     self.msg(channel, "https://github.com/uniite/rnyc_irc")
 
