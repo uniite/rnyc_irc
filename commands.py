@@ -116,7 +116,7 @@ def reload_nick (self, user, channel, args):
 
 
 import random
-def random(self, user, channel, args):
+def choose(self, user, channel, args):
     choices = args.split(" ")
     choice = random.choice(choices)
     self.msg(channel, "%s: %s" % user, choice)
