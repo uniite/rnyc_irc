@@ -17,6 +17,18 @@ import time
 import re
 from datetime import date, timedelta
 from rickroll import make_call
+import json
+
+rfcs = json.load(open("rfcs.json", "r"))
+
+
+def rfc (self, user, channel, args):
+    try:
+        num = int(args)
+        rfc = rfcs[num]
+        self.msg(channel, "RFC%s: %s" % (num, rfc))
+    except:
+        pass
 
 def reddit(self, user, channel, args):
     if args:
@@ -112,7 +124,10 @@ def help (self, user, channel, args):
 
 
 def reload_nick (self, user, channel, args):
-    self.setNick("cobra_bot")
+    if channel != "#/r/nyc-test":
+        self.msg(channel, "Cut it out!")
+    else:
+        self.setNick("cobra_bot")
 
 
 def src (self, user, channel, args):
@@ -134,6 +149,18 @@ def wiki(self, user, channel, args):
     if not args:
         self.msg(channel, "Usage !wiki <article>")
     else:
+        if args == "Patches":
+            self.msg(channel, '"An active member of #/r/nyc." - http://en.wikipedia.org/wiki/Patches')
+            return
+        elif args == "D_":
+            self.msg(channel,
+                     '"An insightful member of #/r/nyc." - http://en.wikipedia.org/wiki/D_')
+            return
+        elif args == "randomwhere":
+            self.msg(channel,
+                     '"A really random and hawt* member of #/r/nyc, who currently holds the top spot on the channel stats.  *Not as hot as D_" - http://en.wikipedia.org/wiki/randomwhere')
+            return
+
         origterm = args
         origterm = origterm.encode('utf-8')
 
@@ -192,3 +219,8 @@ def define(self, user, channel, args):
 
 def sudoku(self, user, channel, args):
     self.msg(channel, "randomwhere: sudo learn python")
+
+def say(self, user, channel, args):
+    print user
+    if user == "python_guy!~python_gu@184-106-220-104.static.cloud-ips.com":
+        self.msg("#/r/nyc", args)
