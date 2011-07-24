@@ -15,8 +15,10 @@ import json
 import inspect
 import time
 import re
+import json
+import urllib
 from datetime import date, timedelta
-from rickroll import make_call
+#from rickroll import make_call
 import json
 
 rfcs = json.load(open("rfcs.json", "r"))
@@ -139,8 +141,8 @@ def rickroll (self, user, channel, args):
     if user.find("terp") != -1:
         self.msg(channel, "No more for you, terp.")
         return
-    #self.msg(channel, "Only available on April Fool's Day")
-    #return
+    self.msg(channel, "Only available on April Fool's Day")
+    return
     make_call(args)
     self.msg(channel, "Calling %s..." % args)
 
@@ -198,7 +200,7 @@ def translate(self, user, channel, args):
                  "Usage: !translate <phrase to be translated into english>")
 
 
-def define(self, user, channel, args):
+def wikitionary(self, user, channel, args):
     """ Defines a word using the Wiktionary API """
     if args:
         data = json.load(urllib2.urlopen(
@@ -224,3 +226,33 @@ def say(self, user, channel, args):
     print user
     if user == "python_guy!~python_gu@184-106-220-104.static.cloud-ips.com":
         self.msg("#/r/nyc", args)
+
+
+def urban_dictionary(self, user, channel, args):
+    # Query Urban Dictionary's JSON API
+    params = urllib.urlencode({"term": args})
+    url = "http://www.urbandictionary.com/iphone/search/define?%s"
+    # Try to parse and return the formatted results
+    try:
+        result = json.load(urllib2.urlopen(url % params))
+        word = args
+        definition = result["list"][0]["definition"].replace("\n", "")
+        if len(definition) > 200:
+            definition = definition = definition[:200] + "..."
+        message = "%s - %s " % (word, definition) \
+                  + "(%s)" % result["list"][0]["permalink"]
+    # If there was a urllib2 error, the site is probably down
+    except urllib2.URLError:
+        message = "Could not contact Urban Dictionary"
+    # If something random went wrong, we can assume there was no definition
+    except:
+        message = "No definition found for \"%s\"" % args
+
+    self.msg(channel, str(message))
+
+# Aliases
+wikipedia = wiki
+define = wikitionary
+urbandictionary = urban_dictionary
+urbandict = urban_dictionary
+urban = urban_dictionary
