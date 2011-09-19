@@ -256,12 +256,12 @@ def woot(self, user, channel, args):
     url = "http://www.woot.com/"
     # Try to parse and return the formatted results
     try:
-        result = urllib2.urlopen(url)
+        result = urllib2.urlopen(url).read()
         # Not gonna bother with an XML parser for this...
         tag = '<h2 class="fn">'
         start = result.find(tag)
-        #product = result[start + len(tag) : result.find('</h2>', start)]
-        message = "%s" % result[start:]
+        product = result[start + len(tag) : result.find('</h2>', start)]
+        message = "%s" % product
     # If there was a urllib2 error, the site is probably down
     except urllib2.URLError:
         message = "Could not contact Woot"
