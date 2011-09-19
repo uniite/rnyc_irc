@@ -260,8 +260,8 @@ def woot(self, user, channel, args):
         # Not gonna bother with an XML parser for this...
         tag = '<h2 class="fn">'
         start = result.find(tag)
-        product = result[start + len(tag) : result.find('</h2>', start)]
-        message = "%s" % product
+        #product = result[start + len(tag) : result.find('</h2>', start)]
+        message = "%s" % result[start:]
     # If there was a urllib2 error, the site is probably down
     except urllib2.URLError:
         message = "Could not contact Woot"
