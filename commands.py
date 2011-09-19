@@ -265,7 +265,7 @@ def woot(self, user, channel, args):
         product = ghetto_parse(result, '<h2 class="fn">', '</h2>')
         price = ghetto_parse(result, '<span class="amount">', '</span>')
         condition = ghetto_parse(result, '<dd>', '</dd>')
-        message = "%s (%s) - %s" % (product, condition, price)
+        message = "%s (%s) - $%s" % (product, condition, price)
     # If there was a urllib2 error, the site is probably down
     except urllib2.URLError:
         message = "Could not contact Woot"
