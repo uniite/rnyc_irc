@@ -252,16 +252,20 @@ def urban_dictionary(self, user, channel, args):
 
 
 def woot(self, user, channel, args):
+    def ghetto_parse(data, open_tag, close_tag):
+        start = data.find(open_tag)
+        return data[start + len(open_tag): result.find(close_tag, start)]
+
     # Query Urban Dictionary's JSON API
     url = "http://www.woot.com/"
     # Try to parse and return the formatted results
     try:
         result = urllib2.urlopen(url).read()
-        # Not gonna bother with an XML parser for this...
-        tag = '<h2 class="fn">'
-        start = result.find(tag)
-        product = result[start + len(tag) : result.find('</h2>', start)]
-        message = "%s" % product
+        # Not gonna bother with a real XML parser for this...
+        product = ghetto_parse(result, '<h2 class="fn">', '</h2>')
+        price = ghetto_parse(result, '<span class="amount">', '</span>')
+        condition = ghetto_parse(result, '<dd>', '</dd>')
+        message = "%s (%s) - %s" % (product, condition, price)
     # If there was a urllib2 error, the site is probably down
     except urllib2.URLError:
         message = "Could not contact Woot"
