@@ -250,6 +250,28 @@ def urban_dictionary(self, user, channel, args):
 
     self.msg(channel, str(message))
 
+
+def woot(self, user, channel, args):
+    # Query Urban Dictionary's JSON API
+    params = urllib.urlencode({"term": args})
+    url = "http://www.woot.com/"
+    # Try to parse and return the formatted results
+    try:
+        result = urllib2.urlopen(url % params)
+        # Not gonna bother with an XML parser for this...
+        tag = '<h2 class="fn">'
+        start = result.find(tag)
+        product = result[start + len(tag) : result.find('</h2>', start)]
+        message = "%s" % product
+    # If there was a urllib2 error, the site is probably down
+    except urllib2.URLError:
+        message = "Could not contact Woot"
+    # If something random went wrong, we can assume there was no definition
+    except:
+        message = "Erorrrr"
+
+    self.msg(channel, str(message))
+
 # Aliases
 wikipedia = wiki
 define = wikitionary
