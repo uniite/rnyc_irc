@@ -253,11 +253,10 @@ def urban_dictionary(self, user, channel, args):
 
 def woot(self, user, channel, args):
     # Query Urban Dictionary's JSON API
-    params = urllib.urlencode({"term": args})
     url = "http://www.woot.com/"
     # Try to parse and return the formatted results
     try:
-        result = urllib2.urlopen(url % params)
+        result = urllib2.urlopen(url)
         # Not gonna bother with an XML parser for this...
         tag = '<h2 class="fn">'
         start = result.find(tag)
