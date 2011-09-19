@@ -14,7 +14,7 @@ import re
 # Various regular expressions for finding commands in messages
 # TODO: What characters are allowed in a nick?
 # For finding karma
-karma_regex = re.compile("([\w-]+)(\+\+|--)", re.M)
+karma_regex = re.compile("([\w\[\]-]+)(\+\+|--)", re.M)
 
 
 def process_message (self, user, channel, msg):
