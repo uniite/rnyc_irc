@@ -259,7 +259,7 @@ def woot(self, user, channel, subdomain):
     subdomain = subdomain.strip() or "www"
 
     # Query Urban Dictionary's JSON API
-    url = "http://www.woot.com/"
+    url = "http://%s.woot.com/" % subdomain
     # Try to parse and return the formatted results
     try:
         result = urllib2.urlopen(url).read()
