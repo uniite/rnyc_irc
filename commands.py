@@ -251,10 +251,12 @@ def urban_dictionary(self, user, channel, args):
     self.msg(channel, str(message))
 
 
-def woot(self, user, channel, args):
+def woot(self, user, channel, subdomain):
     def ghetto_parse(data, open_tag, close_tag):
         start = data.find(open_tag)
         return data[start + len(open_tag): result.find(close_tag, start)]
+
+    subdomain = subdomain.strip() or "www"
 
     # Query Urban Dictionary's JSON API
     url = "http://www.woot.com/"
@@ -268,7 +270,7 @@ def woot(self, user, channel, args):
         message = "%s (%s) - $%s" % (product, condition, price)
     # If there was a urllib2 error, the site is probably down
     except urllib2.URLError:
-        message = "Could not contact Woot"
+        message = "Could not contact %s.woot.com" % subdomain
     # If something random went wrong, we can assume there was no definition
     except:
         message = "Erorrrr"
