@@ -64,7 +64,9 @@ class PythonBot(irc.IRCClient):
             # Try to get the command from commands.py
             if hasattr(commands, command):
                 # Run the command if it exists
-                thread.start_new_thread(getattr(commands, command),(self, user, channel, args))
+                thread.start_new_thread(
+                    getattr(commands, command),(self, user, channel, args)
+                )
 
 
         # Check for silent triggers
